@@ -14,6 +14,8 @@ export function Post({ author, publishedAt, content }) {
 
   const publishedDateRelativeToNow = formatDistanceToNow(publishedAt);
 
+  const isCommentEmpty = newComment.length === 0;
+
   function handleCreateNewComment() {
     event.preventDefault();
 
@@ -21,8 +23,21 @@ export function Post({ author, publishedAt, content }) {
     setNewComment('');
   }
 
-  function handleNewCommentChange() {
+  function handleNewComment() {
+    event.target.setCustomValidity('');
     setNewComment(event.target.value);
+  }
+
+  function deleteComment(commentToDelete) {
+    const newCommentList = comments.filter((comment) => {
+      return comment != commentToDelete;
+    });
+
+    setComments(newCommentList);
+  }
+
+  function handleInvalidComment() {
+    event.target.setCustomValidity('This field is mandatory');
   }
 
   return (
@@ -46,10 +61,10 @@ export function Post({ author, publishedAt, content }) {
       <div className={styles.content}>
         {content.map((line) => {
           if (line.type === 'paragraph') {
-            return <p>{line.content}</p>;
+            return <p key={line.content}>{line.content}</p>;
           } else if (line.type === 'link') {
             return (
-              <p>
+              <p key={line.content}>
                 <a href="#">{line.content}</a>
               </p>
             );
@@ -64,15 +79,25 @@ export function Post({ author, publishedAt, content }) {
           name="comment"
           placeholder="Leave a Comment"
           value={newComment}
-          onChange={handleNewCommentChange}
+          onChange={handleNewComment}
+          onInvalid={handleInvalidComment}
+          required
         />
         <footer>
-          <button type="submit">Comment</button>
+          <button type="submit" disabled={isCommentEmpty}>
+            Comment
+          </button>
         </footer>
       </form>
       <div className={styles.commentList}>
         {comments.map((comment) => {
-          return <Comment content={comment} />;
+          return (
+            <Comment
+              key={comment}
+              content={comment}
+              onDeleteComment={deleteComment}
+            />
+          );
         })}
       </div>
     </article>
