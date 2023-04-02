@@ -1,12 +1,29 @@
 import { format, formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react';
 
 import { Avatar } from '../Avatar/Avatar';
 import { Comment } from '../Comment/Comment';
 
 import styles from './Post.module.css';
 
-export function Post({ author, publishedAt, content }) {
+interface IAuthor {
+  name: string;
+  role: string;
+  avatarUrl: string;
+}
+
+interface IContent {
+  type: string;
+  content: string;
+}
+
+interface IProps {
+  author: IAuthor;
+  publishedAt: Date;
+  content: IContent[];
+}
+
+export function Post({ author, publishedAt, content }: IProps) {
   const [comments, setComments] = useState(['Good Work, Amazing']);
   const [newComment, setNewComment] = useState('');
 
@@ -16,28 +33,28 @@ export function Post({ author, publishedAt, content }) {
 
   const isCommentEmpty = newComment.length === 0;
 
-  function handleCreateNewComment() {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault();
 
     setComments([...comments, newComment]);
     setNewComment('');
   }
 
-  function handleNewComment() {
+  function handleNewComment(event: ChangeEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('');
     setNewComment(event.target.value);
   }
 
-  function deleteComment(commentToDelete) {
+  function handleInvalidComment(event: InvalidEvent<HTMLTextAreaElement>) {
+    event.target.setCustomValidity('This field is mandatory');
+  }
+
+  function deleteComment(commentToDelete: string) {
     const newCommentList = comments.filter((comment) => {
       return comment != commentToDelete;
     });
 
     setComments(newCommentList);
-  }
-
-  function handleInvalidComment() {
-    event.target.setCustomValidity('This field is mandatory');
   }
 
   return (

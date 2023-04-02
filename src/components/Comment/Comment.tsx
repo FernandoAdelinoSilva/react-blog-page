@@ -4,7 +4,12 @@ import { Avatar } from '../Avatar/Avatar';
 
 import styles from './Comment.module.css';
 
-export function Comment({ content, onDeleteComment }) {
+interface IProps {
+  content: string;
+  onDeleteComment: (comment: string) => void;
+}
+
+export function Comment({ content, onDeleteComment }: IProps) {
   const [likes, setLikes] = useState(0);
 
   function handleDeleteComment() {
@@ -22,6 +27,7 @@ export function Comment({ content, onDeleteComment }) {
       <Avatar
         hasBorder={false}
         src="https://github.com/FernandoAdelinoSilva.png"
+        alt=""
       />
 
       <div className={styles.commentBox}>
